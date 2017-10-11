@@ -34,7 +34,7 @@ router.get('/:userID', ({params: {userID}}, res) => {
  */
 router.put('/:userID', ({body, params: {userID}}, res) => {
   if (body.persist) {
-    UserStore.insert({...body, id: userID});
+    UserStore.insert({body, id: userID});
   }
 
   const userJSON = JSON.stringify({...body, userID});
