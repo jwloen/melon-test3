@@ -37,7 +37,7 @@ router.put('/:userID', ({body, params: {userID}}, res) => {
     UserStore.insert({body, id: userID});
   }
 
-  const userJSON = JSON.stringify({...body, userID});
+  const userJSON = JSON.stringify({body, userID});
   console.log(`PUT User response: ${userJSON}`);
 
   res.sendStatus(204);
