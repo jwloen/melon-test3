@@ -1,11 +1,6 @@
-/**
- * Copyright 2017-present, Facebook, Inc. All rights reserved.
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
+/* eslint-disable */
 var path = require('path');
+const webpack = require('webpack');
 
 module.exports = [{
   context: path.join(__dirname),
@@ -17,10 +12,6 @@ module.exports = [{
   module: {
     loaders: [
       { test: /\.css$/, loader: 'style-loader!css-loader?-svgo' },
-      {
-        test: /\.(jpg|png|svg)$/,
-        loader: 'url-loader',
-      },
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
@@ -34,5 +25,13 @@ module.exports = [{
       path.join(__dirname, 'client'),
       'node_modules'
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        APP_ID: JSON.stringify(process.env.APP_ID),
+        PAGE_ID: JSON.stringify(process.env.PAGE_ID),
+      },
+    })
+  ]
 }];

@@ -10,6 +10,7 @@ import express from 'express';
 
 // ===== MESSENGER =============================================================
 import receiveApi from '../messenger-api-helpers/receive';
+import logger from '../messenger-api-helpers/fba-logging';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get('/', (req, res) => {
  * 2. Postbacks
  */
 router.post('/', (req, res) => {
-    /*
+  /*
     You must send back a status of 200(success) within 20 seconds
     to let us know you've successfully received the callback.
     Otherwise, the request will time out.
@@ -53,26 +54,21 @@ router.post('/', (req, res) => {
   res.sendStatus(200);
 
   const data = req.body;
-  console.log('Webhook POST', JSON.stringify(data));
 
   // Make sure this is a page subscription
   if (data.object === 'page') {
     // Iterate over each entry
     // There may be multiple if batched
     data.entry.forEach((pageEntry) => {
-      if (!pageEntry.messaging) {
-        return;
-      }
       // Iterate over each messaging event and handle accordingly
       pageEntry.messaging.forEach((messagingEvent) => {
         console.log({messagingEvent});
-
         if (messagingEvent.message) {
           receiveApi.handleReceiveMessage(messagingEvent);
-        }
-
-        if (messagingEvent.postback) {
+        } else if (messagingEvent.postback) {
           receiveApi.handleReceivePostback(messagingEvent);
+        } else if (messagingEvent.referral) {
+          receiveApi.handleReceiveReferral(messagingEvent);
         } else {
           console.log(
             'Webhook received unknown messagingEvent: ',
